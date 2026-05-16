@@ -149,6 +149,7 @@ class DatabaseSeeder extends Seeder
             foreach ($subjects as $subject) {
                 $student->subjects()->attach($subject->id, [
                     'school_year' => '2024-2025',
+                    'semester' => '1st Semester',
                     'is_active' => true,
                 ]);
             }

@@ -124,8 +124,8 @@ class SubjectController extends Controller
         // Sync students if provided
         if (isset($validated['student_ids'])) {
             $subject->students()->sync(
-                collect($validated['student_ids'])->mapWithKeys(function ($id) {
-                    return [$id => ['school_year' => date('Y'), 'is_active' => true]];
+                collect($validated['student_ids'])->mapWithKeys(function ($id) use ($validated) {
+                    return [$id => ['school_year' => date('Y'), 'semester' => $validated['semester'] ?? '1st Semester', 'is_active' => true]];
                 })->toArray()
             );
         }

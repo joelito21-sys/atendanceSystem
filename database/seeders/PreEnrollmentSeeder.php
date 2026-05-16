@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\ParentModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\Student;
 
 class PreEnrollmentSeeder extends Seeder
 {
@@ -50,6 +51,7 @@ class PreEnrollmentSeeder extends Seeder
                     'user_id' => $studentUser->id,
                     'student_id_number' => $entry['student_id_number'],
                     'section' => $entry['section'],
+                    'grade_level' => '1st Year',
                 ]);
             } else {
                 $student = $studentUser->student;
