@@ -26,12 +26,14 @@ class DatabaseSeeder extends Seeder
 
         // Create Admin User
 
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@school.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@school.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
 
         // Create Teachers
         $teachers = [];
@@ -42,18 +44,22 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($teacherData as $td) {
-            $user = User::create([
-                'name' => $td['name'],
-                'email' => $td['email'],
-                'password' => Hash::make('password'),
-                'role' => 'teacher',
-            ]);
+            $user = User::firstOrCreate(
+                ['email' => $td['email']],
+                [
+                    'name' => $td['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'teacher',
+                ]
+            );
 
-            $teachers[] = Teacher::create([
-                'user_id' => $user->id,
-                'employee_id' => $td['employee_id'],
-                'department' => $td['department'],
-            ]);
+            $teachers[] = Teacher::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'employee_id' => $td['employee_id'],
+                    'department' => $td['department'],
+                ]
+            );
         }
 
         // Create Parents
@@ -65,19 +71,23 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($parentData as $pd) {
-            $user = User::create([
-                'name' => $pd['name'],
-                'email' => $pd['email'],
-                'password' => Hash::make('password'),
-                'role' => 'parent',
-            ]);
+            $user = User::firstOrCreate(
+                ['email' => $pd['email']],
+                [
+                    'name' => $pd['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'parent',
+                ]
+            );
 
-            $parents[] = ParentModel::create([
-                'user_id' => $user->id,
-                'notification_email' => $pd['notification_email'],
-                'relationship' => 'Parent',
-                'receive_notifications' => true,
-            ]);
+            $parents[] = ParentModel::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'notification_email' => $pd['notification_email'],
+                    'relationship' => 'Parent',
+                    'receive_notifications' => true,
+                ]
+            );
         }
 
         // Create Subjects
@@ -91,14 +101,16 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($subjectData as $sd) {
-            $subjects[] = Subject::create([
-                'name' => $sd['name'],
-                'code' => $sd['code'],
-                'teacher_id' => $teachers[$sd['teacher']]->id,
-                'grade_level' => 'Grade 10',
-                'units' => 3,
-                'is_active' => true,
-            ]);
+            $subjects[] = Subject::firstOrCreate(
+                ['code' => $sd['code']],
+                [
+                    'name' => $sd['name'],
+                    'teacher_id' => $teachers[$sd['teacher']]->id,
+                    'grade_level' => 'Grade 10',
+                    'units' => 3,
+                    'is_active' => true,
+                ]
+            );
         }
 
         // Create Class Schedules
@@ -125,20 +137,24 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($studentData as $sd) {
-            $user = User::create([
-                'name' => $sd['name'],
-                'email' => $sd['email'],
-                'password' => Hash::make('password'),
-                'role' => 'student',
-            ]);
+            $user = User::firstOrCreate(
+                ['email' => $sd['email']],
+                [
+                    'name' => $sd['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'student',
+                ]
+            );
 
-            $student = Student::create([
-                'user_id' => $user->id,
-                'student_id_number' => $sd['id_number'],
-                'parent_id' => $parents[$sd['parent']]->id,
-                'grade_level' => 'Grade 10',
-                'section' => 'Einstein',
-            ]);
+            $student = Student::firstOrCreate(
+                ['student_id_number' => $sd['id_number']],
+                [
+                    'user_id' => $user->id,
+                    'parent_id' => $parents[$sd['parent']]->id,
+                    'grade_level' => 'Grade 10',
+                    'section' => 'Einstein',
+                ]
+            );
 
             $students[] = $student;
 

@@ -26,18 +26,23 @@ class SubjectSeeder extends Seeder
 
         $teachers = [];
         foreach ($teacherData as $data) {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make('password'),
-                'role' => 'teacher',
-            ]);
+            $user = User::firstOrCreate(
+                ['email' => $data['email']],
+                [
+                    'name' => $data['name'],
+                    'password' => Hash::make('password'),
+                    'role' => 'teacher',
+                ]
+            );
 
-            $teachers[] = Teacher::create([
-                'user_id' => $user->id,
-                'employee_id' => 'TCH-' . rand(1000, 9999),
-                'department' => $data['dept'],
-            ]);
+            $teacher = Teacher::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'employee_id' => 'TCH-' . rand(1000, 9999),
+                    'department' => $data['dept'],
+                ]
+            );
+            $teachers[] = $teacher;
         }
 
         $bsit = Course::where('code', 'BSIT')->first();
@@ -300,17 +305,19 @@ class SubjectSeeder extends Seeder
             foreach ($years as $yearLevel => $semesters) {
                 foreach ($semesters as $semester => $subjs) {
                     foreach ($subjs as $s) {
-                        Subject::create([
-                            'name' => $s['name'],
-                            'code' => $courseCode . '-' . $s['code'],
-                            'description' => $s['name'] . ' for ' . $courseCode,
-                            'teacher_id' => $teachers[array_rand($teachers)]->id,
-                            'course_id' => $course->id,
-                            'year_level' => $yearLevel,
-                            'semester' => $semester,
-                            'units' => rand(2, 3),
-                            'is_active' => true,
-                        ]);
+                        Subject::updateOrCreate(
+                            ['code' => $courseCode . '-' . $s['code']],
+                            [
+                                'name' => $s['name'],
+                                'description' => $s['name'] . ' for ' . $courseCode,
+                                'teacher_id' => $teachers[array_rand($teachers)]->id,
+                                'course_id' => $course->id,
+                                'year_level' => $yearLevel,
+                                'semester' => $semester,
+                                'units' => rand(2, 3),
+                                'is_active' => true,
+                            ]
+                        );
                     }
                 }
             }

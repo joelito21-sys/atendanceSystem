@@ -46,50 +46,53 @@ class PreEnrollmentSeeder extends Seeder
                     'password' => Hash::make('password'),
                     'role' => 'student',
                 ]);
+            }
 
-                $student = Student::create([
+            $student = Student::firstOrCreate(
+                ['student_id_number' => $entry['student_id_number']],
+                [
                     'user_id' => $studentUser->id,
-                    'student_id_number' => $entry['student_id_number'],
                     'section' => $entry['section'],
                     'grade_level' => '1st Year',
-                ]);
-            } else {
-                $student = $studentUser->student;
+                ]
+            );
+            if (!$student->user_id) {
+                $student->update(['user_id' => $studentUser->id]);
             }
 
             // 2. Create Parent account if it doesn't exist
-            $parentUser = User::where('email', $entry['parent_email'])->first();
-            if (!$parentUser) {
-                $parentUser = User::create([
+            $parentUser = User::firstOrCreate(
+                ['email' => $entry['parent_email']],
+                [
                     'name' => 'Parent of ' . $entry['student_name'],
-                    'email' => $entry['parent_email'],
                     'password' => Hash::make('password'),
                     'role' => 'parent',
-                ]);
+                ]
+            );
 
-                $parentProfile = ParentModel::create([
-                    'user_id' => $parentUser->id,
+            $parentProfile = ParentModel::firstOrCreate(
+                ['user_id' => $parentUser->id],
+                [
                     'relationship' => 'Guardian',
                     'notification_email' => $entry['parent_email'],
-                ]);
-            } else {
-                $parentProfile = $parentUser->parentProfile;
-            }
+                ]
+            );
 
             if ($student && $parentProfile) {
                 $student->update(['parent_id' => $parentProfile->id]);
             }
 
             foreach ($entry['subjects'] as $subjectCode) {
-                PreEnrollment::create([
+                PreEnrollment::firstOrCreate([
                     'student_id_number' => $entry['student_id_number'],
-                    'student_name' => $entry['student_name'],
+                    'subject_code'      => $subjectCode,
+                    'school_year'       => '2025-2026',
+                    'semester'          => '1st Semester',
+                ], [
+                    'student_name'  => $entry['student_name'],
                     'student_email' => $entry['student_email'],
-                    'parent_email' => $entry['parent_email'],
-                    'subject_code' => $subjectCode,
-                    'section' => $entry['section'],
-                    'school_year' => '2025-2026',
-                    'semester' => '1st Semester',
+                    'parent_email'  => $entry['parent_email'],
+                    'section'       => $entry['section'],
                 ]);
             }
         }

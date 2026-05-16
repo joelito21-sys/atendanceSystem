@@ -12,20 +12,19 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Course::create([
-            'name' => 'Bachelor of Science in Information Technology',
-            'code' => 'BSIT',
-        ]);
+        \App\Models\Course::firstOrCreate(
+            ['code' => 'BSIT'],
+            ['name' => 'Bachelor of Science in Information Technology']
+        );
 
-        \App\Models\Course::create([
-            'name' => 'Bachelor of Science in Computer Science',
-            'code' => 'BSCS',
-        ]);
+        \App\Models\Course::firstOrCreate(
+            ['code' => 'BSCS'],
+            ['name' => 'Bachelor of Science in Computer Science']
+        );
 
-        \App\Models\Course::create([
-            'name' => 'Bachelor of Science in Hotel and Restaurant Management',
-            'code' => 'HRM',
-        ]);
-
+        \App\Models\Course::firstOrCreate(
+            ['code' => 'HRM'],
+            ['name' => 'Bachelor of Science in Hotel and Restaurant Management']
+        );
     }
 }
