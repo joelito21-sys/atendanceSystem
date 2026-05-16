@@ -33,6 +33,7 @@ COPY . .
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Update Apache DocumentRoot to public/
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
@@ -46,5 +47,9 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Make startup script executable
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Start via startup script (runs migrations then Apache)
+CMD ["/start.sh"]
